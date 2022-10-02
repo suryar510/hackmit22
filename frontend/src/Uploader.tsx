@@ -10,7 +10,7 @@ export default function Uploader() {
     event.preventDefault();
     console.log(textValue);
     // @TODO: Michael do whatever u want to submit here
-    const res = await fetch(BASE_ENDPOINT + "/search", {
+    const res = await fetch(BASE_ENDPOINT + "/uploadText", {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -22,7 +22,7 @@ export default function Uploader() {
     });
 
     const data = await res.text();
-    if (Object.keys(data).length !== 0) {
+    if (data.trim() === "[true]") {
       setTextValue("");
     } else {
       alert("The request did not go through.");
