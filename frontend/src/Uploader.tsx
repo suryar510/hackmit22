@@ -4,11 +4,29 @@ import { useState } from "react";
 
 export default function Uploader() {
   const [textValue, setTextValue] = useState("");
+  const BASE_ENDPOINT = "https://evening-anchorage-22221.herokuapp.com";
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     console.log(textValue);
     // @TODO: Michael do whatever u want to submit here
+    const res = await fetch(BASE_ENDPOINT + "/search", {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify({
+        query: textValue,
+      }),
+    });
+
+    const data = await res.text();
+    if (Object.keys(data).length !== 0) {
+      setTextValue("");
+    } else {
+      alert("The request did not go through.");
+    }
   };
 
   const handleChange = (
@@ -27,6 +45,7 @@ export default function Uploader() {
           <Box my={4} textAlign="left">
             <form onSubmit={handleSubmit}>
               <Textarea
+                value={textValue}
                 placeholder="Here is a sample placeholder"
                 onChange={handleChange}
               />
