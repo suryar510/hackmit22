@@ -1,90 +1,58 @@
 import React, { useState } from "react";
-import logo from "./logo.svg";
 import "./App.css";
 import Searchbar from "./components/Searchbar";
 import Answer from "./components/Answer";
 import PreviousQA, { PreviousQAProps } from "./components/PreviousQA";
 import { Spinner, Box, ChakraProvider } from "@chakra-ui/react";
-import { useParams } from "react-router-dom";
+// import { useParams } from "react-router-dom";
 
 function App() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [currentQuestion, setCurrentQuestion] = useState<string>("");
-  const [currentAnswer, setCurrentAnswer] = useState<string>(
-    "This is the answer."
-  );
+  const [currentAnswer, setCurrentAnswer] = useState<string>("");
+  const BASE_ENDPOINT = "https://evening-anchorage-22221.herokuapp.com";
 
-  const { engineId } = useParams();
+  // const { engineId } = useParams();
   const [previousQAs, setPreviousQAs] = useState<PreviousQAProps[]>([
     {
       question: "Why is francis so silly?",
       answer: "Because he is silly.",
     },
     {
-      question: "Why is francis so silly?",
-      answer: "Because he is silly.",
-    },
-    {
-      question: "Why is francis so silly?",
-      answer: "Because he is silly.",
-    },
-    {
-      question: "Why is francis so silly?",
-      answer: "Because he is silly.",
-    },
-    {
-      question: "Why is francis so silly?",
-      answer: "Because he is silly.",
-    },
-    {
-      question: "Why is francis so silly?",
-      answer: "Because he is silly.",
-    },
-    {
-      question: "Why is francis so silly?",
-      answer: "Because he is silly.",
-    },
-    {
-      question: "Why is francis so silly?",
-      answer: "Because he is silly.",
-    },
-    {
-      question: "Why is francis so silly?",
-      answer: "Because he is silly.",
-    },
-    {
-      question: "Why is francis so silly?",
-      answer: "Because he is silly.",
-    },
-    {
-      question: "Why is francis so silly?",
-      answer: "Because he is silly.",
-    },
-    {
-      question: "Why is francis so silly?",
-      answer: "Because he is silly.",
-    },
-    {
-      question: "Why is francis so silly?",
-      answer: "Because he is silly.",
-    },
-    {
-      question: "Why is francis so silly?",
-      answer: "Because he is silly.",
-    },
-    {
-      question: "Why is francis so silly?",
+      question: "Why is surya so silly?",
       answer: "Because he is silly.",
     },
   ]);
 
-  const editCurrentQuestion = (question: string) => {
-    setCurrentQuestion(question);
+  const handleSearch = async () => {
+    setIsLoading(true);
+    if (currentQuestion) {
+      const res = await fetch(BASE_ENDPOINT + "/search", {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify({
+          query: currentQuestion,
+        }),
+      });
+      console.log({ res });
+      const data = await res.text();
+      alert(data);
+      const newQA: PreviousQAProps = {
+        question: currentQuestion,
+        answer: data,
+      };
+      setPreviousQAs([newQA, ...previousQAs]);
+
+      setCurrentAnswer(data);
+    }
+    setIsLoading(false);
   };
 
-  const onSubmit = () => {
-    setIsLoading(true);
-    alert(engineId);
+  const editCurrentQuestion = (question: string) => {
+    setCurrentQuestion(question);
   };
 
   const style = `.shadow::before {
@@ -105,10 +73,16 @@ function App() {
           <h1 className="text-center mt-10 mb-5 text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
             Aneta
           </h1>
-          <Searchbar editQuestion={editCurrentQuestion} onSubmit={onSubmit} />
+          <Searchbar
+            question={currentQuestion}
+            editQuestion={editCurrentQuestion}
+            onSubmit={handleSearch}
+          />
           <Box>
             {isLoading ? (
-              <Spinner size="xl" />
+              <div className="mt-5 mb-5">
+                <Spinner size="xl" />
+              </div>
             ) : (
               <Answer answer={currentAnswer} />
             )}
