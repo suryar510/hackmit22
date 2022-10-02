@@ -4,25 +4,16 @@ import Searchbar from "./components/Searchbar";
 import Answer from "./components/Answer";
 import PreviousQA, { PreviousQAProps } from "./components/PreviousQA";
 import { Spinner, Box, ChakraProvider } from "@chakra-ui/react";
+import { BASE_ENDPOINT } from "./utils";
 // import { useParams } from "react-router-dom";
 
 function App() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [currentQuestion, setCurrentQuestion] = useState<string>("");
   const [currentAnswer, setCurrentAnswer] = useState<string>("");
-  const BASE_ENDPOINT = "https://evening-anchorage-22221.herokuapp.com";
 
   // const { engineId } = useParams();
-  const [previousQAs, setPreviousQAs] = useState<PreviousQAProps[]>([
-    {
-      question: "Why is francis so silly?",
-      answer: "Because he is silly.",
-    },
-    {
-      question: "Why is surya so silly?",
-      answer: "Because he is silly.",
-    },
-  ]);
+  const [previousQAs, setPreviousQAs] = useState<PreviousQAProps[]>([]);
 
   const handleSearch = async () => {
     setIsLoading(true);
@@ -37,14 +28,14 @@ function App() {
           query: currentQuestion,
         }),
       });
-      const data = await res.text();
+      const data = await res.json();
       const newQA: PreviousQAProps = {
         question: currentQuestion,
-        answer: data,
+        answer: data.output,
       };
       setPreviousQAs([newQA, ...previousQAs]);
 
-      setCurrentAnswer(data);
+      setCurrentAnswer(data.output + " (" + data.time + " seconds)");
     }
     setIsLoading(false);
   };

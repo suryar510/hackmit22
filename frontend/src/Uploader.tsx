@@ -2,17 +2,35 @@ import { ChakraProvider, Link, Spinner, Textarea } from "@chakra-ui/react";
 import { Box, Button } from "@chakra-ui/react";
 import { useState } from "react";
 import UILink from "./components/UILink";
+import { BASE_ENDPOINT } from "./utils";
 
 export default function Uploader() {
   const [textValue, setTextValue] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [uiLink, setUILink] = useState<string>("");
 
+  const sendData = async () => {
+    if (textValue) {
+      const res = await fetch(BASE_ENDPOINT + "/uploadText", {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify({
+          query: textValue,
+        }),
+      });
+      await res;
+    }
+  };
+
   const handleSubmit = async () => {
     console.log(textValue);
     setIsLoading(true);
     setUILink("http://localhost:3000/search/sj3f9k2");
-    await sleep(6.5);
+    await sendData();
+    await sleep(1.5);
     setIsLoading(false);
   };
 

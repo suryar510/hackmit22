@@ -1,6 +1,4 @@
 import React from "react";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
-import { Box } from "@chakra-ui/layout";
 
 export interface UILinkProps {
   link: string;
