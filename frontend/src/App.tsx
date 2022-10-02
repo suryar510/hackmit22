@@ -37,9 +37,7 @@ function App() {
           query: currentQuestion,
         }),
       });
-      console.log({ res });
       const data = await res.text();
-      alert(data);
       const newQA: PreviousQAProps = {
         question: currentQuestion,
         answer: data,

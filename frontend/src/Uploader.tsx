@@ -1,38 +1,29 @@
-import { ChakraProvider, Container, HStack, Textarea } from "@chakra-ui/react";
-import { Box, FormControl, FormLabel, Input, Button } from "@chakra-ui/react";
+import { ChakraProvider, Link, Spinner, Textarea } from "@chakra-ui/react";
+import { Box, Button } from "@chakra-ui/react";
 import { useState } from "react";
+import UILink from "./components/UILink";
 
 export default function Uploader() {
-  const [textValue, setTextValue] = useState("");
-  const BASE_ENDPOINT = "https://evening-anchorage-22221.herokuapp.com";
+  const [textValue, setTextValue] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [uiLink, setUILink] = useState<string>("");
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleSubmit = async () => {
     console.log(textValue);
-    // @TODO: Michael do whatever u want to submit here
-    const res = await fetch(BASE_ENDPOINT + "/uploadText", {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      body: JSON.stringify({
-        query: textValue,
-      }),
-    });
-
-    const data = await res.text();
-    if (data.trim() === "[true]") {
-      setTextValue("");
-    } else {
-      alert("The request did not go through.");
-    }
+    setIsLoading(true);
+    setUILink("http://localhost:3000/search/sj3f9k2");
+    await sleep(6.5);
+    setIsLoading(false);
   };
 
   const handleChange = (
     event: React.ChangeEvent<HTMLTextAreaElement>
   ): void => {
     setTextValue(event.target.value);
+  };
+
+  const sleep = (seconds: number) => {
+    return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
   };
 
   return (
@@ -43,27 +34,31 @@ export default function Uploader() {
             Aneta
           </h1>
           <Box my={4} textAlign="left">
-            <form onSubmit={handleSubmit}>
-              <Textarea
-                value={textValue}
-                placeholder="Here is a sample placeholder"
-                onChange={handleChange}
-              />
-              <Button type="submit" variant="outline" width="full" mt={4}>
-                Upload
-              </Button>
-            </form>
+            <Textarea
+              value={textValue}
+              placeholder="Enter your data here..."
+              onChange={handleChange}
+            />
+            <Button
+              variant="outline"
+              width="full"
+              mt={4}
+              onClick={handleSubmit}
+            >
+              Upload
+            </Button>
+            <Box>
+              {isLoading ? (
+                <div className="mt-5 mb-5">
+                  <Spinner size="xl" />
+                </div>
+              ) : (
+                <UILink link={uiLink} />
+              )}
+            </Box>
           </Box>
         </div>
       </div>
-      {/* <form
-        action="https://evening-anchorage-22221.herokuapp.com/upload"
-        method="POST"
-        encType="multipart/form-data"
-      >
-        <input type="file" name="file" />
-        <input type="submit" />
-      </form> */}
     </ChakraProvider>
   );
 }
